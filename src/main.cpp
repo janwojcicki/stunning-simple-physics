@@ -47,6 +47,7 @@ class Shape{
 	float angular_velocity;
 	float angular_acceleration;
 	float mass;
+	float last_dt;
 	Shape(){}
 
 	void init(){
@@ -59,20 +60,42 @@ class Shape{
 				((points[i].pos+center_of_mass)*(0.5f)).len();
 		}
 	}
+
+	void update(float dt){
+		Vec dp = velocity*dt + acceleration*dt*dt*.5f;
+		for(uint i = 0; i < points.size(); i++){
+			points[i].pos += dp;
+		}
+		velocity += acceleration*dt;	
+	}
 };
 
+
 int side_of_line(Vec a, Vec b, Vec p){
-	return sign((p.x-a.x)*(b.y-a.y) -(p.y-a.y)*(b.x-a.x));
+	float l = ((p.x-a.x)*(b.y-a.y) -(p.y-a.y)*(b.x-a.x));
+	if (l == 0) return 0;
+	return l>0 ? 1 : -1;
 }
 
-bool checkIntersection(const Shape &a, const Shape &b){
+bool checkIntersection_internal(const Shape &a, const Shape &b){
 	int next;
+	bool intersect = true;
 	for (uint i = 0; i < a.points.size(); i++){
 		next = (i==a.points.size()-1) ? 0 : i+1;
-		
-
+		int l = 0;
+		for(uint j = 0; j < b.points.size(); j++){
+			l += side_of_line(a.points[i].pos, a.points[next].pos, b.points[j].pos);
+		}
+		std::cout << l << '\n';
+		if(abs(l) == (int)b.points.size()){
+			intersect = false;
+			break;
+		}
 	}
-	return true;
+	return intersect;
+}
+bool checkIntersection(const Shape &a, const Shape &b){
+	return !checkIntersection_internal(a, b) && !checkIntersection_internal(b, a);
 }
 
 int main(){
@@ -82,12 +105,12 @@ int main(){
 	s1.points.push_back(Point(100, 100));
 	s1.points.push_back(Point(0, 100));
 	s1.init();
-	s2.points.push_back(Point(50, 50));
-	s2.points.push_back(Point(100, 0));
+	s2.points.push_back(Point(0, 50));
+	s2.points.push_back(Point(101, 0));
 	s2.points.push_back(Point(200, 50));
-	s2.points.push_back(Point(100, 100));
+	s2.points.push_back(Point(101, 100));
 	s2.init();
 
-	
+	std::cout << checkIntersection(s1, s2);
 	return 0;
 }
