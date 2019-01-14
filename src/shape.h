@@ -14,7 +14,7 @@ class Shape{
 	Shape (){}
 	virtual void init(void) = 0;
 	virtual Shape* clone(void) = 0;
-	virtual void draw(sf::RenderWindow* window) = 0;
+	virtual void draw(sf::RenderWindow* window, Vec pos, float angle) = 0;
 
 	float moment_of_inertia = 0;
 };
@@ -28,7 +28,7 @@ class Polygon : public Shape{
 	Shape* clone(){
 		Polygon* p = new Polygon();	
 		for (uint i = 0; i < points.size(); i++){
-			p->points.push_back(Vec(points[i].x, points[i].y))		
+			p->points.push_back(Vec(points[i].x, points[i].y));
 		}
 		return p;
 	}
@@ -39,7 +39,7 @@ class Polygon : public Shape{
 
 		//znajdz srodek ciezkosci i przesun pkty
 		//tak zeby srodek ciezkosci = (0, 0) w ukladzie
-		for (int i = 0; i < points.size(); i++){
+		for (uint i = 0; i < points.size(); i++){
 			com += points[i];
 		}
 		com = com * (1.f/ (float) points.size());
@@ -47,7 +47,7 @@ class Polygon : public Shape{
 		//przy okazji dev do rysowania zrob ksztalt
 		cshape.setPointCount(points.size());
     	cshape.setFillColor(sf::Color::Green);
-		for (int i = 0; i < points.size(); i++){
+		for (uint i = 0; i < points.size(); i++){
 			points[i] = points[i] - com;
 
 			cshape.setPoint(i, sf::Vector2f(points[i].x, points[i].y));
@@ -56,7 +56,7 @@ class Polygon : public Shape{
 		//policz moment bezwladnosci
 		float sum1=0;
 		float sum2=0;
-		for (int n=0;n<points.size();++n)  { 
+		for (uint n=0;n<points.size();++n)  { 
 		   sum1 += points[n+1].cross_len(points[n])* 
 				   (points[n+1].dot(points[n+1]) + points[n+1].dot(points[n]) + points[n].dot(points[n]));
 		   sum2 += points[n+1].cross_len(points[n]);
@@ -66,7 +66,9 @@ class Polygon : public Shape{
 		
 	}
 
-	void draw(sf::RenderWindow* window){
-		window->draw(cshape)	;
+	void draw(sf::RenderWindow* window, Vec pos, float angle){
+		cshape.setPosition(pos.x, pos.y);
+		cshape.setRotation(angle);
+		window->draw(cshape);
 	}
 };

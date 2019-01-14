@@ -10,12 +10,15 @@
 
 int main()
 {
-    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML works!");
+    sf::RenderWindow window(sf::VideoMode(200, 200), "SFML");
 
 	std::vector<Vec> P = {Vec(-100, -100), Vec(-100, 100), Vec(100, 100), Vec(100, -100)};
 	Polygon p;
 	p.points = P;
-	p.init();
+
+	World w;
+	w.add(&p, Vec(50, 50));
+
 	std::cout << p.moment_of_inertia;
 	sf::Clock clock;
     while (window.isOpen())
@@ -29,7 +32,7 @@ int main()
         }
 
         window.clear();
-		p.draw(&window);	
+		w.draw(&window);
         window.display();
     }
 
