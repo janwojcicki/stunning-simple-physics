@@ -4,6 +4,7 @@
 #include <cmath>
 #include "body.h"
 #include "vec.h"
+#include <iostream>
 
 class Shape{
 	public:
