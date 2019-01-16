@@ -12,12 +12,13 @@ int main()
 {
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML");
 
-	std::vector<Vec> P = {Vec(-100, -100), Vec(-100, 100), Vec(100, 100), Vec(100, -100)};
+	std::vector<Vec> P = {Vec(-20, -20), Vec(-20, 20), Vec(20, 20), Vec(60, -20)};
 	Polygon p;
 	p.points = P;
-
 	World w;
-	w.add(&p, Vec(50, 50));
+	Body* b = w.add(&p, Vec(50, 50));
+	b->angle.set(3.14f/6.f);
+	Body* b2 = w.add(&p, Vec(85, 93));
 
 	std::cout << p.moment_of_inertia;
 	sf::Clock clock;
@@ -30,6 +31,8 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+		w.step(dt.asSeconds());
 
         window.clear();
 		w.draw(&window);

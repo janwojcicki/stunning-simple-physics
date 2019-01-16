@@ -28,11 +28,18 @@ class Vec{
 		x = nx;
 		y = ny;
 	}
-	Vec operator+(const Vec &other){
+	Vec normalize(){
+		float len = this->len();
+		return Vec(x/len, y/len);
+	}
+	Vec operator+(Vec other){
 		return Vec(this->x+other.x, this->y+other.y);
 	}
 	Vec operator-(const Vec &other){
 		return Vec(this->x-other.x, this->y-other.y);
+	}
+	Vec operator-(){
+		return Vec(-x,  -y);
 	}
 	Vec operator*(const float &other){
 		return Vec(this->x*other, this->y*other);

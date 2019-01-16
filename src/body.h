@@ -3,6 +3,7 @@
 #include <cmath>
 #include <SFML/Graphics.hpp>
 #include "vec.h"
+#include "mat.h"
 
 class Shape;
 
@@ -15,7 +16,7 @@ class Body{
 
 	float angular_velocity = 0;
 	float torque = 0;
-	float angle = 0;
+	mat angle;
 	
 	float moment_of_inertia = 0;
 

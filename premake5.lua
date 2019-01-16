@@ -10,5 +10,6 @@ project "fiziks"
   targetdir "bin/"
 
   configuration "Debug"
+  	buildoptions {'-g'}
   	links {'sfml-graphics', 'sfml-window', 'sfml-system','sfml-audio','sfml-network'}
 
