@@ -20,8 +20,8 @@ int main()
 	b->angle.set(3.14f/6.f);
 	Body* b2 = w.add(&p, Vec(85, 93));
 
-	std::cout << p.moment_of_inertia;
 	sf::Clock clock;
+	float accm = 0;
     while (window.isOpen())
     {
 		sf::Time dt = clock.restart();
@@ -31,8 +31,12 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-
-		w.step(dt.asSeconds());
+		accm += dt.asSeconds();
+		if(accm>3){
+			w.step(0.01f);
+			std::cout << "step";
+			accm = 0;
+		}
 
         window.clear();
 		w.draw(&window);

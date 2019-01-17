@@ -33,7 +33,6 @@ class Polygon : public Shape{
 	
 	Shape* clone(){
 		Polygon* p = new Polygon();	
-		std::cout << points.size() << " "<<normals.size();
 		for (uint i = 0; i < points.size(); i++){
 			p->points.push_back(Vec(points[i].x, points[i].y));
 		}
@@ -46,7 +45,6 @@ class Polygon : public Shape{
 
 	void init(){
 		Vec com;
-		std::cout << "INIT";
 
 		//znajdz srodek ciezkosci i przesun pkty
 		//tak zeby srodek ciezkosci = (0, 0) w ukladzie

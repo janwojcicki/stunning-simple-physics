@@ -27,7 +27,7 @@ class mat{
 		return mat(lt, lb, rt, rb);	
 	}
 
-	const Vec operator*(const Vec& other){
+	Vec operator*(const Vec& other){
 		return Vec(lt*other.x+rt*other.y, lb*other.x + rb*other.y);
 	}
 

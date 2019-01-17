@@ -13,6 +13,12 @@ class Vec{
 	float cross_len(const Vec &b){
    		return (abs(x*b.y - y*b.x));
 	}
+	float cross(const Vec &b){
+   		return ((x*b.y - y*b.x));
+	}
+	Vec cross(float a){
+		return Vec(a*y, -a*x);
+	}
 	float len(){
 		return sqrt(x*x+y*y);
 	}
