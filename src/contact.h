@@ -9,7 +9,7 @@ class Contact{
 	Vec normal;
 	float penetration;
 	Vec contacts[2];
-	uint contact_count;
+	uint contact_count = 0;
 
 	float avg_rest;
 	float s_friction;
@@ -31,19 +31,20 @@ class Contact{
 		Polygon* bb = (Polygon*) b->shape;
 
 		for(uint i = 0; i < aa->normals.size(); i++){
-			Vec norm = a->angle * (-aa->normals[i]);
+			Vec n = aa->normals[i];
+			Vec nw = a->angle * n;
 
-			norm = b->angle.transpose() * norm;
+			n = b->angle.transpose() * nw;
 
-			Vec extr = bb->get_extreme_point( -norm );
+			Vec extr = bb->get_extreme_point( -n );
 
 			Vec v1 = a->angle * aa->points[i];
 			v1 += a->pos;
 			v1 += -b->pos;
 			v1 = b->angle.transpose() * v1;
 
-			if(norm.dot(extr - v1) > best_dis){
-				best_dis = norm.dot(extr-v1);
+			if(n.dot(extr - v1) > best_dis){
+				best_dis = n.dot(extr-v1);
 				*f = i;
 			}
 
@@ -59,6 +60,7 @@ class Contact{
 
 		referenceNormal = RefPoly->angle * referenceNormal; 
 		referenceNormal = IncPoly->angle.transpose( ) * referenceNormal; 
+
 
 		int incidentFace = 0;
 		float minDot = 5000000;
@@ -112,15 +114,22 @@ class Contact{
 
 		return sp;
 	}
+inline bool BiasGreaterThan( float a, float b )
+{
+  const float k_biasRelative = 0.95f;
+  const float k_biasAbsolute = 0.01f;
+  return a >= b * k_biasRelative + a * k_biasAbsolute;
+}
 
-	void solve(){
+	bool solve(){
+		contact_count = 0;
 		uint faceA,faceB;
 		float deepA = sat(A, B, &faceA);
 		if(deepA >= 0.f) //nie ma kolizji
-			return;
+			return false;
 		float deepB = sat(B, A, &faceB);
 		if(deepB >= 0.f) //nie ma kolizji
-			return;
+			return false;
 
 
 		uint referenceIndex;
@@ -130,7 +139,7 @@ class Contact{
 		Body *IncPoly; 
 
 		// Determine which shape contains reference face
-		if(deepA > deepB){
+		if(BiasGreaterThan(deepA, deepB)){
 			RefPoly = A;
 			IncPoly = B;
 			referenceIndex = faceA;
@@ -163,10 +172,10 @@ class Contact{
 		float posSide =  sidePlaneNormal.dot(v2);
 
 		if(Clip( -sidePlaneNormal, negSide, incidentFace ) < 2)
-			return; 
+			return false; 
 
 		if(Clip(  sidePlaneNormal, posSide, incidentFace ) < 2)
-			return;
+			return false;
 
 		// Flip
 		normal = flip ? -refFaceNormal : refFaceNormal;
@@ -196,6 +205,7 @@ class Contact{
 		}
 
 		contact_count = cp;
+		return true;
 	}
 
 	void init(float _dt){
@@ -212,7 +222,7 @@ class Contact{
 				A->velocity - rra.cross(-A->angular_velocity);
 
 			if(rrv.len()*rrv.len() < (gravity * _dt).len()*(gravity * _dt).len() + EPSILON){
-				avg_rest = 0.0f;	
+				//avg_rest = 0.0f;	
 			}
 		}
 	}
@@ -222,6 +232,7 @@ class Contact{
 		for(uint i = 0; i < contact_count; i++){
 			Vec rra = contacts[i] - A->pos;
 			Vec rrb = contacts[i] - B->pos;
+
 
 			Vec rrv = B->velocity + rrb.cross(-B->angular_velocity) -
 				A->velocity - rra.cross(-A->angular_velocity);
@@ -234,13 +245,14 @@ class Contact{
 			float ra_cross_n = rra.cross(normal);
 			float rb_cross_n = rrb.cross(normal);
 
-			float inv_sum = (1.f/A->mass) + (1.f/B->mass) + ra_cross_n*ra_cross_n * (1.f/A->moment_of_inertia) + rb_cross_n*rb_cross_n * (1.f/B->moment_of_inertia);
-			std::cout << inv_sum;
+			float inv_sum = A->iM + B->iM + ra_cross_n*ra_cross_n * A->iI + rb_cross_n*rb_cross_n * B->iI;
 
+			
 			float j = (-1.f + avg_rest) * contact_vel;
 			j /= inv_sum;
 			j /= (float)contact_count;
 
+			std::cout << "J "<< j << std::endl;
 			Vec impulse = normal *j;
 			A->ApplyImpulse(-impulse, rra);
 			B->ApplyImpulse(impulse, rrb);
@@ -273,8 +285,8 @@ class Contact{
 	{
 		const float k_slop = 0.05f; 
 		const float percent = 0.4f; 
-		Vec correction = normal * (std::max( penetration - k_slop, 0.0f ) / (1.f/A->mass + 1.f/B->mass)) * percent;
-		A->pos += -correction * (1.f/A->mass);
-		B->pos+= correction * (1.f/B->mass);
+		Vec correction = normal * (std::max( penetration - k_slop, 0.0f ) / (A->iM + B->iM)) * percent;
+		A->pos += -correction * A->iM;
+		B->pos+= correction * B->iM;
 	}
 };

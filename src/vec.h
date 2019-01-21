@@ -1,5 +1,6 @@
 #pragma once
 #include <cmath>
+#include <iostream>
 
 class Vec{
 	public:
@@ -9,6 +10,9 @@ class Vec{
 
 	float dot(const Vec &other){
 		return this->x*other.x + this->y*other.y;
+	}
+	void pretty(std::string s){
+		std::cout << s << " " << x << " " << y << '\n'	;
 	}
 	float cross_len(const Vec &b){
    		return (abs(x*b.y - y*b.x));
