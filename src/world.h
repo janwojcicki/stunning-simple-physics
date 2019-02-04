@@ -29,13 +29,14 @@ class World{
 	void integrateForces(Body *b, float _dt){
 		if(b->stat)
 			return;
-		b->velocity += (b->force * b->iM + gravity) * (_dt*0.5f);
-		b->angular_velocity += (b->torque * b->iI) * (_dt*0.5f);
+		b->velocity += (b->force * b->inv_mass + gravity) * (_dt*0.5f);
+		b->angular_velocity += (b->torque * b->inv_I) * (_dt*0.5f);
 	}
 	void integrate_velocity( Body *b, float dt )
 	{
 		if(b->stat)
 			return;
+
 		b->pos += b->velocity * dt;
 		b->angle.set(b->angle.angle() + b->angular_velocity * dt);
 		integrateForces( b, dt );
@@ -69,12 +70,14 @@ class World{
 			}	
 		}
 
-	  	for(uint i = 0; i < bodies.size( ); i++)
+	  	for(uint i = 0; i < bodies.size( ); i++){
 			integrate_velocity( bodies[i], _dt );
+		}
 	
 	  	// Correct positions
-	  	for(uint i = 0; i < contacts.size( ); ++i)
+	  	for(uint i = 0; i < contacts.size( ); ++i){
 			contacts[i].positional_correction();
+		}
 	
 	  	// Clear all forces
 	  	for(uint i = 0; i < bodies.size( ); ++i)

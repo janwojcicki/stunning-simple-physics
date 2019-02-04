@@ -12,7 +12,7 @@ class Body{
 	Shape* shape;
 	Vec pos;
 	float mass = 10.f;
-	float iM = 0.1f;
+	float inv_mass = 0.1f;
 	Vec velocity;
 	Vec force;
 	bool stat = false;
@@ -21,8 +21,8 @@ class Body{
 	float torque = 0;
 	mat angle;
 
-	float moment_of_inertia = 0;
-	float iI = 0;
+	float I = 0; // moment bezwladnosci
+	float inv_I = 0;
 
 	float static_friction = 0.1f;
 	float dynamic_friction = 0.1f;
@@ -35,7 +35,7 @@ class Body{
 	
 	void ApplyImpulse(Vec impulse,  Vec contactVector )
 	{
-		velocity += impulse * iM ;
-		angular_velocity += contactVector.cross( impulse ) * iI;
+		velocity += impulse * inv_mass ;
+		angular_velocity += contactVector.cross( impulse ) * inv_I;
 	}
 };

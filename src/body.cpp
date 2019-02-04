@@ -3,8 +3,8 @@
 
 Body::Body(Shape* _shape, Vec _pos) : shape(_shape->clone()), pos(_pos){
 	shape->init();	
-	moment_of_inertia = shape->moment_of_inertia;
-	iI = 1/moment_of_inertia;
+	I = shape->moment_of_inertia;
+	inv_I = 1/I;
 }
 
 void Body::draw(sf::RenderWindow* window){
