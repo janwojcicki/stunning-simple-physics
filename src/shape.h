@@ -32,6 +32,7 @@ class Circle : public Shape{
 	public:
 		float radius;
 		sf::CircleShape cshape;
+		sf::Vertex line[2];
 		Shape* clone(){
 			Circle* c = new Circle(radius);
 			return c;
@@ -47,9 +48,12 @@ class Circle : public Shape{
 			moment_of_inertia = 0.5f * radius * radius;
 		}
 		void draw(sf::RenderWindow* window, Vec pos, mat angle){
+			line[0] = sf::Vertex(sf::Vector2f(pos.x, pos.y));
+			line[1] = sf::Vertex(sf::Vector2f(pos.x + angle.lt*radius, pos.y + angle.lb *radius));
 			cshape.setPosition(pos.x-radius, pos.y-radius);
 			//cshape.setRotation(RadToDeg(angle.angle()));
 			window->draw(cshape);
+			window->draw(line, 2, sf::Lines);
 		}
 };
 

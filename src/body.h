@@ -26,7 +26,7 @@ class Body{
 
 	float static_friction = 0.1f;
 	float dynamic_friction = 0.1f;
-	float restitution = 0.1f;
+	float restitution = 0.000001f;
 
 
 	Body(Shape* shape, Vec pos);
@@ -35,6 +35,7 @@ class Body{
 	
 	void ApplyImpulse(Vec impulse,  Vec contactVector )
 	{
+
 		velocity += impulse * inv_mass ;
 		angular_velocity += contactVector.cross( impulse ) * inv_I;
 	}

@@ -40,6 +40,8 @@ class Vec{
 	}
 	Vec normalize(){
 		float len = this->len();
+		if (len == 0)
+			return Vec(0, 0);
 		return Vec(x/len, y/len);
 	}
 	Vec operator+(Vec other){

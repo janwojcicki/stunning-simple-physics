@@ -14,7 +14,7 @@ int main()
 	srand(time(0));
     sf::RenderWindow window(sf::VideoMode(200, 200), "SFML");
 
-	std::vector<Vec> P = {Vec(-20, -20), Vec(20, -20), Vec(20, 20), Vec(-20, 20)};
+	std::vector<Vec> P = {Vec(-20, -10), Vec(20, -20), Vec(20, 20), Vec(-20, 20)};
 	std::vector<Vec> P2 = { Vec(10, -20),Vec(-50, -20), Vec(20, 20), Vec(-60, 20)};
 	Polygon p;
 	p.points = P;

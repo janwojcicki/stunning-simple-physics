@@ -49,13 +49,13 @@ class World{
 			A = bodies[i];
 			for (uint j = i+1; j<bodies.size(); j++){
 				B = bodies[j];
-				//if((A->pos-B->pos).len() <= A->shape->furthest_point + B->shape->furthest_point){
+				if((A->pos-B->pos).len() <= A->shape->furthest_point + B->shape->furthest_point){
 					//hmm podejrzane, może się przecinają
 					Contact c(A, B, gravity);
 					c.solve();
 					if(c.contact_count>0)
 						contacts.push_back(c);
-				//}
+				}
 			}
 		}
 		for(uint i = 0; i < bodies.size(); i++){
@@ -74,12 +74,10 @@ class World{
 			integrate_velocity( bodies[i], _dt );
 		}
 	
-	  	// Correct positions
 	  	for(uint i = 0; i < contacts.size( ); ++i){
 			contacts[i].positional_correction();
 		}
 	
-	  	// Clear all forces
 	  	for(uint i = 0; i < bodies.size( ); ++i)
 	  	{
 			Body *b = bodies[i];

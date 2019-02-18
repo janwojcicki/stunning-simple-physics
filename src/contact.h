@@ -4,9 +4,6 @@
 #include "consts.h"
 #include <cfloat>
 
-void fuck(float f, std::string s){
-	std::cout << s << " " << f << std::endl;
-}
 
 class Contact{
 	public:
@@ -20,6 +17,8 @@ class Contact{
 		float s_friction;
 		float d_friction;
 		Vec gravity;
+
+		bool tmp = false;
 
 
 
@@ -241,6 +240,11 @@ class Contact{
 				contact_count = 1;
 				normal = -(B->angle * bb->normals[normalface]);
 				contacts[0] = normal*aa->radius + A->pos;
+				if(!tmp && std::isnan(contacts[0].x)){
+					normal.pretty("normal");
+					fuck(aa->radius, "radius");
+					tmp = true;
+				}
 				penetration = aa->radius;
 				return true;
 			}
@@ -259,6 +263,9 @@ class Contact{
 				n = normal;
 				v1 = B->angle * v1 + B->pos;
 				contacts[0] = v1;
+				if(std::isnan(contacts[0].x)){
+					std::cout << "2";
+				}
 			}
 			else if(dot2 <= 0.0f){
 				if((center-v2).len() > aa->radius)	
@@ -271,6 +278,9 @@ class Contact{
 				n = B->angle * n;
 				n = n.normalize();
 				normal = n;
+				if(std::isnan(contacts[0].x)){
+					std::cout << "3";
+				}
 			} else{
 				Vec n = bb->normals[normalface];
 				if ((center - v1).dot(n) > aa->radius)
@@ -280,6 +290,9 @@ class Contact{
 				normal = -n;
 				contacts[0] = normal * aa->radius + A->pos;
 				contact_count = 1;
+				if(std::isnan(contacts[0].x)){
+					std::cout << "4";
+				}
 			}
 			return true;
 		}
@@ -342,7 +355,7 @@ class Contact{
 					AA->velocity - rra.cross(-AA->angular_velocity);
 
 				if(rrv.len()*rrv.len() < (gravity * _dt).len()*(gravity * _dt).len() + EPSILON){
-					avg_rest = 0.0f;	
+					//avg_rest = 0.0f;	
 				}
 			}
 		}
@@ -373,12 +386,7 @@ class Contact{
 				j /= (float)contact_count;
 
 				Vec impulse = normal *j;
-				bool before = std::isnan(AA->velocity.x);
 				AA->ApplyImpulse(-impulse, rra);
-				if ( before != std::isnan(AA->velocity.x) ){
-					fuck(i, " ");
-					contacts[i].pretty("cont");
-				}
 				BB->ApplyImpulse(impulse, rrb);
 
 				rrv = BB->velocity + rrb.cross(-BB->angular_velocity) -
